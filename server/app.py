@@ -68,3 +68,16 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(port=5555, debug=True)
+
+    # Add this to your app.py after db initialization
+@app.before_first_request
+def create_tables():
+    db.create_all()
+    # Add test data if the database is empty
+    if Plant.query.count() == 0:
+        plants = [
+            Plant(name="Aloe", image="./images/aloe.jpg", price=11.50, is_in_stock=True),
+            Plant(name="ZZ Plant", image="./images/zz-plant.jpg", price=25.00, is_in_stock=True)
+        ]
+        db.session.add_all(plants)
+        db.session.commit()
